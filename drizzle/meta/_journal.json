@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1789388160373,
+      "tag": "0000_freezing_unicorn",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1789388825881,
+      "tag": "0001_rare_sphinx",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789391184150,
+      "tag": "0002_volatile_kat_farrell",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1789397520096,
+      "tag": "0003_ordinary_talkback",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1789450521992,
+      "tag": "0004_meeting_workflow",
+      "breakpoints": true
+    }
+  ]
+}

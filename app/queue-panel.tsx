@@ -1,0 +1,12 @@
+'use client';
+import {useEffect,useState} from 'react';
+import {Button} from '@/components/ui/button';
+const names:Record<string,string>={uploading:'等待片段上傳',queued:'已排隊',processing:'轉錄中',waiting_quota:'等待額度恢復',done:'已完成',failed:'需要處理',cancelled:'已取消'};
+export default function QueuePanel({id,onDone}:{id:string,onDone:()=>void}){
+ const [status,setStatus]=useState<any>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ async function load(){const r=await fetch(`/api/audio/jobs/${id}/prepared`);const b:any=await r.json();if(!r.ok)throw new Error(b.error);setStatus(b);return b;}
+ useEffect(()=>{setStatus(null);setError('');let active=true;const read=async()=>{try{const r=await fetch(`/api/audio/jobs/${id}/prepared`);const b:any=await r.json();if(active&&r.ok)setStatus(b);}catch{if(active)setError('暫時無法更新進度');}};read();const timer=setInterval(read,15000);return()=>{active=false;clearInterval(timer);};},[id]);
+ async function act(action:string){setBusy(true);setError('');try{const r=await fetch(`/api/audio/jobs/${id}/prepared/${action}`,{method:'POST'});const b:any=await r.json();if(!r.ok)throw new Error(b.error);setStatus(b);if(b.state==='done')onDone();}catch(e:any){setError(e.message);}finally{setBusy(false);}}
+ const waiting=status?.nextAttemptAt&&Date.parse(status.nextAttemptAt)>Date.now();
+ return <div className="p-5 border-b bg-blue-50 space-y-3"><h3 className="font-semibold">分段轉錄進度</h3>{status&&<><p>{names[status.state]||status.state} · 已完成 {status.completed} / {status.total} 段，已上傳 {status.uploaded} 段</p>{status.nextAttemptAt&&<p className="text-sm">下次可嘗試：{new Date(status.nextAttemptAt).toLocaleString()}</p>}{status.reason&&<p className="text-sm break-words">{({day_audio:'今日音訊額度已用完',hour_audio:'本小時音訊額度已用完',minute_requests:'請求過於頻繁',provider_quota:'供應方要求等待額度恢復'} as Record<string,string>)[status.reason]||status.reason}</p>}<div className="flex gap-2 flex-wrap"><Button variant="outline" disabled={busy} onClick={()=>load().catch(e=>setError(e.message))}>更新進度</Button>{['queued','waiting_quota','processing'].includes(status.state)&&<Button disabled={busy||waiting} onClick={()=>act('step')}>{busy?'處理中…':'處理下一片段'}</Button>}{status.state==='failed'&&<Button disabled={busy} onClick={()=>act('retry')}>重試未完成片段</Button>}{!['done','cancelled','uploading'].includes(status.state)&&<Button variant="outline" disabled={busy} onClick={()=>act('cancel')}>取消後續處理</Button>}</div></>}<p className="text-sm text-slate-600">片段與進度已保存。跨日自動續作需要連接常駐排程程式；目前可由 MCP 或此處觸發下一片段，重新整理只查詢進度。</p>{error&&<p role="alert">{error}</p>}</div>;
+}

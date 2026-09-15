@@ -1,0 +1,18 @@
+'use client';
+import {useEffect,useState} from 'react';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Textarea} from '@/components/ui/textarea';
+export default function MeetingPanel({id,revision}:{id:string,revision:string}){
+ const [bundle,setBundle]=useState<any>(null),[actions,setActions]=useState<any[]>([]),[msg,setMsg]=useState('');
+ const [term,setTerm]=useState(''),[aliases,setAliases]=useState(''),[reference,setReference]=useState(''),[glossary,setGlossary]=useState<any[]>([]);
+ async function request(path:string,body?:any){const r=await fetch('/api/audio/'+path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:undefined);const d:any=await r.json();if(!r.ok)throw Error(d.error||'操作失敗');return d;}
+ async function reload(){const [b,a,g]=await Promise.all([request(`jobs/${id}/completion`),request(`jobs/${id}/actions`),request('glossary')]);setBundle(b);setActions(a);setGlossary(g);}
+ useEffect(()=>{reload().catch(e=>setMsg(e.message));},[id,revision]);
+ async function copy(value:string){try{await navigator.clipboard.writeText(value);setMsg('已複製，可貼回專屬 Work 對話');}catch{setMsg('無法自動複製，請選取下方文字複製');}}
+ async function addTerm(){try{await request('glossary',{term,aliases:aliases.split('、').map(x=>x.trim()).filter(Boolean),reference,confirmed:true});setTerm('');setAliases('');setReference('');await reload();setMsg('已保存你確認的詞彙');}catch(e:any){setMsg(e.message);}}
+ function handoff(target:string){const b=bundle;return `請處理此會議的${target}。會議：${b.meeting_url}\n來源摘要版本：${b.documents.summary.version||'尚未產生'}\n${b.documents.summary.text||'請先完成逐字稿校正與摘要。'}\n先查現有交接項目，避免重複。交辦保留負責人、截止時間、來源位置；未知不猜測。需要發送郵件或行程邀請時，先確認收件人及使用者授權。未連接必要工具時只產生草稿，回報尚未發送。完成後保存外部回執至本會議 actions。`;}
+ return <section className="p-5 border-b space-y-4" aria-label="會議處理與延伸"><h3 className="font-semibold">處理結果與後續工作</h3>{bundle&&<><a className="text-blue-700 underline break-all" href={bundle.meeting_url}>這場會議的固定連結</a><p className="text-sm">{bundle.verified?'目前文件版本已完成讀回確認':'尚未完成全部文件的讀回確認'} · SB {bundle.completion?.sbCompared?'已記錄比對':'未比對'}</p><Textarea readOnly aria-label="標準進度訊息" value={bundle.responseText} className="min-h-36"/><Button variant="outline" onClick={()=>copy(bundle.responseText)}>複製進度訊息</Button><div className="flex flex-wrap gap-2">{['SB 筆記','待辦事項','行事曆','Gmail 郵件'].map(t=><Button key={t} variant="outline" onClick={()=>copy(handoff(t))}>{t}交接</Button>)}</div><p className="text-sm text-slate-600">交接按鈕複製任務給你的 Work 對話；不會立即寄信或建立行程。</p></>}
+ <details><summary className="cursor-pointer font-medium">交辦與發送紀錄（{actions.length}）</summary>{actions.map(a=><article key={a.id} className="my-3 border rounded p-3"><p>{a.title} · {a.status}</p><p className="text-sm">{a.assignee||'負責人未指定'} · {a.dueAt||'期限未指定'}</p><p className="whitespace-pre-wrap">{a.body}</p><p className="text-sm break-all">回執：{a.externalId||'尚未發送'}</p></article>)}</details>
+ <details><summary className="cursor-pointer font-medium">我的專用詞庫（{glossary.length}）</summary><p className="my-3 text-sm">只保存你已確認的名稱；SB 比對由已連接的 Work 工具執行。</p><div className="grid gap-3"><Input aria-label="正確詞彙" placeholder="正確詞彙" value={term} onChange={e=>setTerm(e.target.value)}/><Input aria-label="常見誤辨詞" placeholder="常見誤辨詞，以頓號分隔" value={aliases} onChange={e=>setAliases(e.target.value)}/><Input aria-label="確認依據" placeholder="確認依據，例如本人確認或筆記路徑" value={reference} onChange={e=>setReference(e.target.value)}/><Button disabled={!term.trim()||!reference.trim()} onClick={addTerm}>確認並加入詞庫</Button></div>{glossary.map(g=><p key={g.term} className="mt-3 break-words">{g.term} · {g.reference}</p>)}</details>{msg&&<p role="status" className="text-sm">{msg}</p>}</section>;
+}

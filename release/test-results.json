@@ -1,0 +1,29 @@
+{
+  "test_environment": "local isolated D1/R2; synthetic data; Groq network mocked; no live client OAuth tested",
+  "results": [
+    {
+      "command": "python3 -m unittest discover -s tests -v",
+      "exit_code": 0,
+      "output": "",
+      "diagnostic": "test_error_body_is_not_exposed (test_handoff.ClientSafety.test_error_body_is_not_exposed) ... ok\ntest_invalid_origins_never_open_network (test_handoff.ClientSafety.test_invalid_origins_never_open_network) ... ok\ntest_missing_service_token_never_opens_network (test_handoff.ClientSafety.test_missing_service_token_never_opens_network) ... ok\ntest_redirects_are_refused (test_handoff.ClientSafety.test_redirects_are_refused) ... ok\ntest_fresh_schema_and_document_versions (test_handoff.MigrationHandoff.test_fresh_schema_and_document_versions) ... ok\ntest_decoding_misnamed_file_and_resume (test_preparation.Preparation.test_decoding_misnamed_file_and_resume) ... ok\ntest_mcp_instructions_and_calls (test_preparation.Preparation.test_mcp_instructions_and_calls) ... ok\ntest_stdio_protocol (test_preparation.Preparation.test_stdio_protocol) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.750s\n\nOK"
+    },
+    {
+      "command": "node tests/workflow.test.mjs",
+      "exit_code": 0,
+      "output": "PASS: owner isolation, glossary isolation, completion version freshness, stable meeting URL, action deduplication and receipt guards",
+      "diagnostic": ""
+    },
+    {
+      "command": "node tests/queue.test.mjs",
+      "exit_code": 0,
+      "output": "PASS: actual D1 migrations, owner isolation, WAV/hash validation, idempotent upload, persistent daily queue, recovery, no retranscription, D1 document readback",
+      "diagnostic": ""
+    },
+    {
+      "command": "node tests/remote-mcp.test.mjs",
+      "exit_code": 0,
+      "output": "PASS: HTTP initialization, tool discovery/call, notifications, origin/auth/version rejection, raw preservation, client-preprocessing guidance",
+      "diagnostic": ""
+    }
+  ]
+}

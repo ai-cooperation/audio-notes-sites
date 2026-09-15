@@ -1,0 +1,56 @@
+{
+  "scope": "release source snapshot and unauthenticated screenshot; not the production database or private Git history",
+  "heuristic_scan": {
+    "status": "blocked",
+    "license_present": true,
+    "scanned_files": 154,
+    "findings": [
+      {
+        "path": "build/sites-vite-plugin.ts",
+        "reason": "email"
+      },
+      {
+        "path": "docs/images/current-interface.jpg",
+        "reason": "binary_manual_review"
+      },
+      {
+        "path": "tests/test_handoff.py",
+        "reason": "email"
+      }
+    ],
+    "notes": [
+      "No matched values are printed.",
+      "Heuristic scan is not a complete secret or license audit.",
+      "Never release the private Git history; sanitize a separate source snapshot."
+    ]
+  },
+  "manual_resolution": [
+    {
+      "path": "build/sites-vite-plugin.ts",
+      "finding": "email",
+      "resolution": "upstream local preview test fixture under reserved .test domain; retained upstream source"
+    },
+    {
+      "path": "tests/test_handoff.py",
+      "finding": "email",
+      "resolution": "reserved example.test negative URL validation fixture; not a real account"
+    },
+    {
+      "path": "docs/images/current-interface.jpg",
+      "finding": "binary_manual_review",
+      "resolution": "visually inspected original screenshot; empty unauthenticated UI, no meeting records or key value",
+      "sha256": "b3cf0b338cc941928f511de73792a9e9e1a3327e2cf1706fe5082ad2c522198a"
+    }
+  ],
+  "result": "all current heuristic findings reviewed; no matched production deployment IDs, private site URLs or credential literals",
+  "complete_security_audit": false,
+  "excluded_from_export": [
+    "private source Git history",
+    "original operational docs and meeting examples",
+    "database and R2 data",
+    "personal glossary",
+    "local credentials and runtime state",
+    "node_modules and generated dist"
+  ],
+  "source_git_history": "new root; no parent from operational repository"
+}
