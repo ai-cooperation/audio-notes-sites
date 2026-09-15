@@ -1,0 +1,64 @@
+schema_version: "0.3.1"
+profile: small-app
+summary:
+  purpose: 使用自己的 ChatGPT Work，把會議錄音整理成可保存、校正及再次使用的私人會議筆記
+  audience: 已具備 ChatGPT Work 與 Sites，並願意自行設定 Groq API Key 的個人或小型團隊
+  users_estimate: 每個私人 Site 1 位擁有者
+login_method: other
+data:
+  types:
+    - audio_segments
+    - transcripts
+    - corrected_documents
+    - summaries
+    - terminology
+    - encrypted_groq_credential
+  stored_in: [d1, r2]
+  notes: 使用 Sites 提供的 ChatGPT 身分登入。D1 保存資料與版本；R2 保存音訊。Groq Key 由使用者登入部署後網站自行輸入，以 Sites Secret 中的主金鑰加密後保存於 D1。
+secrets:
+  - name: CREDENTIAL_ENCRYPTION_KEY
+    purpose: 加密保存使用者在網站後台輸入的 Groq API Key
+    required: true
+    how_to_obtain: 由 Work 在首次 Sites 部署時產生 32-byte 隨機值並直接保存為 Sites Secret，不顯示於聊天
+    free_tier: true
+  - name: GROQ_API_KEY
+    purpose: 使用 Groq Whisper 進行語音轉文字
+    required: true
+    how_to_obtain: 使用者部署後登入網站，從 Groq 後台建立 Key，再於 Audio Notes 語音辨識設定頁自行貼上
+    free_tier: true
+  - name: AUDIO_SERVICE_TOKEN
+    purpose: 維護者限定的短效附件匯入憑證；標準 Work 部署預設停用
+    required: false
+    how_to_obtain: 僅於受控驗證需要時由站點擁有者產生；不得貼入聊天或作為一般使用者安裝步驟
+    free_tier: true
+  - name: AUDIO_SERVICE_OWNER
+    purpose: 將短效維護匯入憑證綁定既有 Sites owner；標準 Work 部署預設停用
+    required: false
+    how_to_obtain: 僅由 Sites 身分驗證流程取得，不由使用者手填或猜測
+    free_tier: true
+  - name: AUDIO_SERVICE_EXPIRES
+    purpose: 限制維護匯入憑證有效時間；標準 Work 部署預設停用
+    required: false
+    how_to_obtain: 只在受控驗證時設定 Unix epoch 毫秒，到期後移除
+    free_tier: true
+external_services:
+  - domain: api.groq.com
+    kind: fixed
+    purpose: 使用使用者自己的 Groq Key 執行 Whisper 語音轉文字
+    data_sent: 使用者選擇轉錄的音訊片段與精簡提示；不傳送 Sites 登入憑證、摘要、校正版或其他會議
+build_requirements:
+  runtime: node>=22.13.0
+  package_manager: pnpm
+  system_tools: [python3, ffmpeg]
+  gates:
+    - pnpm exec tsc --noEmit
+    - node tests/workflow.test.mjs
+    - node tests/queue.test.mjs
+    - node tests/remote-mcp.test.mjs
+    - python3 -m unittest discover -s tests -v
+    - pnpm build
+  notes: Sites 使用專案鎖定的 pnpm 11.25.0；Python 與 FFmpeg 用於 Work 端長音檔解碼切片，不是外部主機。
+resource_usage:
+  - resource: r2
+    required: true
+    feature: 保存可獨立解碼的音訊片段及選用原檔

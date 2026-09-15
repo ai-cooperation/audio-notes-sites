@@ -1,0 +1,29 @@
+schema_version: "0.3.1"
+update:
+  strategy: upstream-pr
+  upstream_check: gh api repos/ai-cooperation/audio-notes-sites/commits/main
+  preview_before_promote: true
+backup:
+  targets: [d1, r2]
+  method: 更新或移除前，先由登入後網站下載所需原音與四種 Markdown 文件；待 Sites 提供正式 D1／R2 全量匯出途徑後，再將其加入可重現備份流程
+  frequency_hint: 每次重要會議完成後下載文件；更新或移除 Site 前再次確認資料匯出
+restore:
+  method: 目前只能以匯出的原音與 Markdown 建立新工作並重新匯入；完整 D1／R2、版本歷史及加密憑證還原尚未完成驗收
+  d1_time_travel_note: 不把 Sites 平台內部保留機制當成唯一備份，也不假設使用者可直接操作 Cloudflare D1 Time Travel
+uninstall:
+  steps:
+    - 確認已匯出需要保留的原音、原稿、校正版、校正紀錄與摘要
+    - 使用 Sites 正式管理介面移除本專案的私人 Site 及其受管 D1、R2
+    - 重新列出使用者 Sites 專案，確認只移除本案且本案受管資源已歸零
+  data_export_first: true
+quota_watchdog:
+  watch:
+    - resource: groq_speech_to_text
+      free_limit: 依使用者 Groq 帳號當下顯示的方案與額度為準
+      check_method: 讀取應用程式保存的 waiting_quota／nextAttemptAt，並以 Groq 後台及 API 回應核對
+      alert_threshold: 供應方回傳 429 或工作進入 waiting_quota
+    - resource: sites_d1_r2
+      free_limit: 依使用者 Sites 帳號當下顯示的資源政策為準
+      check_method: 使用 Sites 正式管理介面查看私人 Site 的 D1、R2 使用狀態
+      alert_threshold: 平台顯示接近或超過帳號可用額度
+

@@ -1,0 +1,118 @@
+schema_version: "0.1.0"
+protocol: smallgreen-install/v1
+status: candidate
+target:
+  client: chatgpt-work
+  hosting: sites
+  execution_mode: native-sites
+trigger:
+  zh-tw: 依這網站，幫我部署到我的帳號
+  en: Deploy this service to my account from this page
+source:
+  repository: ai-cooperation/audio-notes-sites
+  commit: b484d674c8572ecfaf8f9649484fa59db98e2250
+  license: MIT
+  release: 0.1.0-candidate
+hosting:
+  manifest: .openai/hosting.json
+  managed_resources: [site, d1, r2]
+  external_infrastructure: []
+interaction:
+  max_confirmations: 1
+  confirmations:
+    - id: create_private_site
+      reason: 建立新私人 Site，或確認重用帳號內既有的 Audio Notes Site
+  generated_secrets:
+    - name: CREDENTIAL_ENCRYPTION_KEY
+      storage: sites-secret
+      expose_to_chat: false
+  user_inputs:
+    - name: GROQ_API_KEY
+      timing: after-deploy
+      entry_channel: application-ui
+      chat_handling: forbidden
+      setup_path: /#groq-settings
+steps:
+  - id: verify_work_sites
+    action: verify_capability
+    description: 確認目前 ChatGPT Work 帳號可使用 Sites 原生建置、儲存與發布工具；不改用外部 Cloudflare
+    requires_confirmation: false
+    document: docs/WORK_DEPLOY.md
+  - id: verify_locked_source
+    action: verify_source
+    description: 核對公開 repository、鎖定 commit、MIT 授權及 hosting manifest
+    requires_confirmation: false
+    document: LICENSE
+  - id: select_site
+    action: create_or_reuse_site
+    description: 辨識既有 project ID；只有新部署才建立私人 Audio Notes Site
+    requires_confirmation: true
+    document: docs/WORK_DEPLOY.md
+  - id: install_dependencies
+    action: install_dependencies
+    description: 使用 Sites helper、鎖檔及 pnpm 11.25.0 安裝依賴
+    requires_confirmation: false
+    document: scripts/install-pnpm.sh
+  - id: migrate_database
+    action: apply_migrations
+    description: 依 drizzle meta journal 順序套用全部 D1 migration
+    requires_confirmation: false
+    document: drizzle/meta/_journal.json
+  - id: create_encryption_key
+    action: generate_secret
+    description: 首次部署產生 32-byte 隨機主金鑰並直接保存為 Sites Secret；更新不得覆寫
+    requires_confirmation: false
+    document: docs/WORK_DEPLOY.md
+  - id: publish_private_site
+    action: deploy
+    description: 以 Sites 原生發布流程部署私人網站
+    requires_confirmation: false
+    document: docs/WORK_DEPLOY.md
+  - id: wait_for_site
+    action: wait_for_terminal_state
+    description: 等待 Sites 回報成功或失敗終態，提交部署請求不算完成
+    requires_confirmation: false
+  - id: verify_site
+    action: verify_deployment
+    description: 登入後驗證網站、D1、R2、migration 與 Groq 尚未設定狀態
+    requires_confirmation: false
+    document: .smallgreen/acceptance.yaml
+  - id: guide_groq_setup
+    action: handoff_runtime_setup
+    description: 引導使用者登入部署後網站，自行於後台貼上並驗證 Groq API Key；不得在聊天索取或代填
+    requires_confirmation: false
+    document: docs/WORK_DEPLOY.md
+  - id: verify_audio_flow
+    action: verify_operational_flow
+    description: 使用合成短音檔驗證 Work 附件切片、合法上傳、Groq 轉錄及四種文件讀回
+    requires_confirmation: false
+    document: .smallgreen/acceptance.yaml
+acceptance:
+  - id: sites_deployment_success
+    stage: deployment
+    method: sites-resource
+    expected: 私人 Site、D1、R2 與全部 migration 完成，Sites 回報成功終態
+    required: true
+  - id: authenticated_health
+    stage: deployment
+    method: http
+    expected: 使用者登入後 GET /api/audio/health 回應 200 且 storage 為 true
+    required: true
+  - id: groq_key_configured
+    stage: runtime-setup
+    method: ui
+    expected: 使用者在網站後台自行設定後，頁面顯示 Groq Key 已設定但不提供明文讀回
+    required: true
+  - id: synthetic_audio_complete
+    stage: operational
+    method: workflow
+    expected: 合成短音檔完成合法傳輸、真實 Groq 轉錄、四種文件讀回與 completion verified
+    required: true
+teardown:
+  document: .smallgreen/maintenance.yaml
+  requires_data_export: true
+blockers:
+  - 尚未完成全新 Work／Sites 帳號從服務卡啟動的獨立部署驗收
+  - 尚未驗證 Work 對私人 Site 的持久合法附件傳輸授權
+  - 尚未完成 Sites 受管 D1／R2 的全量備份、還原與 teardown zero-diff 驗收
+

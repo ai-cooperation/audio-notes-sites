@@ -4,7 +4,7 @@
 
 本快照為 **0.1.0 開源候選版**。發布狀態見 [發布紀錄](release/STATUS.md)。尚未通過新帳戶「貼網址到完整附件轉錄」驗收，不稱一鍵即用或 SmallGreen Ready。
 
-公開原碼：[ai-cooperation/audio-notes-sites](https://github.com/ai-cooperation/audio-notes-sites)。SmallGreen 候選已提交 [PR #9](https://github.com/smallgreen-cloud/registry/pull/9)，等待維護者審查。
+公開原碼：[ai-cooperation/audio-notes-sites](https://github.com/ai-cooperation/audio-notes-sites)。SmallGreen 候選 [PR #9](https://github.com/smallgreen-cloud/registry/pull/9) 已合併；正式可安裝狀態仍以 `.smallgreen/install.yaml` 的 status 與驗證證據為準。
 
 ## 對象與設定
 
@@ -24,11 +24,11 @@
 
 ## 給 Work 的部署任務
 
-將公開 repo 網址與下列任務交給 Work：
+將 SmallGreen 服務卡網址交給 Work，只需要說：
 
-> 請讀此專案 AGENTS.md 與 docs/WORK_DEPLOY.md，用我的 Sites 建立私人 Audio Notes，僅用 Sites Worker、D1、R2 與 Groq API。Key 不放對話。部署後交付後台，再分別確認 Key 設定、附件切分、上傳、轉錄、校正、摘要與讀回。沒有合法傳檔授權時，明確回報未完成步驟。
+> 依這網站，幫我部署到我的帳號。
 
-原碼已公開並核對來源；上述流程仍須在使用者自己的帳戶逐步驗收。
+Work 應讀取 `.smallgreen/install.yaml`、`AGENTS.md` 與 `docs/WORK_DEPLOY.md`，使用 Sites 原生資源完成部署。Groq Key 只由使用者登入部署後網站自行貼入後台。候選契約仍有明列 blockers；全新帳戶驗收完成前，不稱一鍵即用或 SmallGreen Ready。
 
 ## 文件
 

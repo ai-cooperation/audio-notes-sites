@@ -1,0 +1,30 @@
+schema_version: "0.3.1"
+health:
+  path: /api/audio/health
+  expect_status: 200
+  expect_body_contains: '"storage":true'
+smoke:
+  - name: Sites D1 migration 與登入後 health 可讀
+    steps:
+      - action: http_request
+        params:
+          method: GET
+          path: /api/audio/health
+          authentication: sites-owner-session
+      - action: d1_query
+        params:
+          sql: SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('recordings', 'audio_tasks', 'documents', 'groq_credentials') ORDER BY name
+    expect:
+      status: 200
+      tables: [audio_tasks, documents, groq_credentials, recordings]
+    idempotency: true
+user_acceptance:
+  - task: 將 SmallGreen 服務卡交給 Work 並說「依這網站，幫我部署到我的帳號」；確認 Work 只使用 Sites 建立私人 Site、D1、R2，未要求外部 Cloudflare 帳號或 API Token
+    success_looks_like: Work 回傳私人網站網址，部署終態成功，登入後顯示語音辨識尚未設定
+  - task: 使用 ChatGPT 帳號登入部署後網站，在語音辨識設定自行貼上 Groq API Key，完成驗證並儲存
+    success_looks_like: 網頁只顯示 Groq Key 已設定與更新時間，不提供明文讀回，聊天內容不含 Key
+  - task: 由同一 Work 對話使用合成短音檔完成附件切片、合法授權上傳、真實 Groq 轉錄及原稿／校正版／校正紀錄／摘要讀回
+    success_looks_like: completion verified 為 true，四種文件版本與私人會議連結均可讀回；任何未完成階段不得合併報喜
+uninstall_check:
+  resource_zero_diff: true
+
