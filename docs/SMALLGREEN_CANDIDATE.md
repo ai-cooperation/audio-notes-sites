@@ -1,6 +1,6 @@
 # SmallGreen 候選：Audio Notes
 
-狀態：Candidate；原碼repo建立、正式部署驗收與發布均待完成。此頁不是服務卡或Ready徽章。
+狀態：Candidate；原碼已公開，候選已提交 [PR #9](https://github.com/smallgreen-cloud/registry/pull/9)。正式部署驗收與 SmallGreen 發布仍待完成。此頁不是服務卡或Ready徽章。
 
 ## 公開介紹
 
@@ -16,11 +16,11 @@ Requires actual Work/Sites access and initial Groq key setup. Audio is sent to G
 
 ## 提交位置與資格
 
-- 原碼預定放 `ai-cooperation/audio-notes-sites`，全新Git歷史；不公開既有私人營運庫。
+- 原碼已公開於 [ai-cooperation/audio-notes-sites](https://github.com/ai-cooperation/audio-notes-sites)，候選快照鎖定 `d25f8a5998418f28cc9d8ade99fe89eb12ee179a`；全新Git歷史，不公開既有私人營運庫。
 - 候選介紹提交 `smallgreen-cloud/registry/candidates/audio-notes-sites.md`。
 - 正式網站由 `smallgreen-cloud/site` 的既有生成流程發布，不另建手工頁。
 - Sites是平台代管資源，Work是互動執行端，Groq是外部服務。不能直接偽稱已符合目前需要wrangler契約的Small App/Pipeline Profile；需維護者接受對應profile與證據方式。
 
 遵循 [發布標準](https://github.com/smallgreen-cloud/registry/blob/main/PROJECT_PUBLISHING_STANDARD.md)：公開授權來源與鎖定版本→adapter契約→conformance→真實部署/驗收/獨立複驗/teardown→append-only evidence→generator→registry gate→雙語網站→人工review。任何門檻未過，維持候選。
 
-待補：新帳戶傳檔授權、真實E2E、正式資源基線與刪除驗證、相容profile、公開repo鎖定commit、第三方依賴完整檢視。現行截圖只為未登入預覽，不能充當真實部署Evidence Pack。
+待補：新帳戶傳檔授權、真實E2E、正式資源基線與刪除驗證、相容profile、第三方依賴完整檢視。現行截圖只為未登入預覽，不能充當真實部署Evidence Pack。

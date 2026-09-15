@@ -1,6 +1,20 @@
 # 開源準備紀錄 — 2026-09-15
 
-版本：0.1.0 候選快照。公開 GitHub 儲存庫尚未建立；SmallGreen 候選提交與正式上架尚未成功。此紀錄不代表 Ready 認證。
+版本：0.1.0 候選快照。原碼已公開，SmallGreen 候選已提交 PR；正式上架尚未完成。此紀錄不代表 Ready 認證。
+
+## 2026-09-15 本機發布驗證
+
+- GitHub 操作者：`gh api user` 確認為 `ai-cooperation`。
+- 公開儲存庫：[ai-cooperation/audio-notes-sites](https://github.com/ai-cooperation/audio-notes-sites)，main 已推送。
+- 發布包 SHA-256：`d9136da8ce8a466d2b55ea6948d0009e2a737eb6efa02bc5aaf28c35c6dc7499`；與交接紀錄一致。
+- 乾淨快照 root commit：`d25f8a5998418f28cc9d8ade99fe89eb12ee179a`；155 份 tracked 檔案與發布包逐位元一致。GitHub API 讀回 commit 及 tree `789b5b373fe500697d4a70c798ec4792e8700990` 一致。
+- macOS、Node 24.10.0、pnpm 11.25.0、Python 3.9.6、FFmpeg 7.1.1；Python 8 項、TypeScript、workflow／queue／MCP 測試與 Sites portable build 均通過。Groq 使用模擬回應，未呼叫正式轉錄服務。
+- 安裝 helper 在此候選仍要求 Linux flock／timeout；macOS 改用 README 的 `corepack pnpm install --frozen-lockfile` 成功，保留原鎖檔及供應鏈政策。未修改產品程式或安裝依賴版本。
+- `pnpm audit --prod --json` 回報各級漏洞均為 0。原碼掃描中的兩個 email 為測試網域；1348×926 JPEG 經目視確認未載入私人會議或 Key。這不代表完整安全稽核。
+- SmallGreen 候選：[PR #9](https://github.com/smallgreen-cloud/registry/pull/9)，由 `ai-cooperation` 的 fork 提交至 `smallgreen-cloud/registry`，僅新增 `candidates/audio-notes-sites.md`。等待維護者審查；不等於合併、正式服務卡或網站上架。
+- 後续文件提交只更新發布狀態；候選原碼仍以上述 root commit 鎖定。
+
+以下為發布前的歷史準備紀錄，原有阻擋已由上述本機發布接續處理。
 
 ## 已完成
 

@@ -4,6 +4,8 @@
 
 本快照為 **0.1.0 開源候選版**。發布狀態見 [發布紀錄](release/STATUS.md)。尚未通過新帳戶「貼網址到完整附件轉錄」驗收，不稱一鍵即用或 SmallGreen Ready。
 
+公開原碼：[ai-cooperation/audio-notes-sites](https://github.com/ai-cooperation/audio-notes-sites)。SmallGreen 候選已提交 [PR #9](https://github.com/smallgreen-cloud/registry/pull/9)，等待維護者審查。
+
 ## 對象與設定
 
 適合已訂閱 ChatGPT 且帳戶實際具備 Work／Sites 的使用者。定位面向既有 US$20 訂閱者，但價格不保證工具存取權；以當前帳戶為準。
@@ -22,11 +24,11 @@
 
 ## 給 Work 的部署任務
 
-公開 repo 建立並完成來源驗證後，將該網址交給 Work：
+將公開 repo 網址與下列任務交給 Work：
 
 > 請讀此專案 AGENTS.md 與 docs/WORK_DEPLOY.md，用我的 Sites 建立私人 Audio Notes，僅用 Sites Worker、D1、R2 與 Groq API。Key 不放對話。部署後交付後台，再分別確認 Key 設定、附件切分、上傳、轉錄、校正、摘要與讀回。沒有合法傳檔授權時，明確回報未完成步驟。
 
-尚未建立公開 repo 前，此段只是交接指引，不是已驗收的公開安裝連結。
+原碼已公開並核對來源；上述流程仍須在使用者自己的帳戶逐步驗收。
 
 ## 文件
 
